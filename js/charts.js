@@ -140,7 +140,7 @@ function updateCharts(d, vicT) {
 /* ── Helpers de animación ─────────────────────────── */
 function animarBarras(delay = 400) {
   setTimeout(() => {
-    document.querySelectorAll('.prog-fill[data-w]').forEach(el => {
+    document.querySelectorAll('[data-w]').forEach(el => {
       el.style.width = el.dataset.w + '%';
     });
   }, delay);
@@ -164,24 +164,33 @@ function buildBarrasVictor(deudas) {
   const cuota     = carro?.cuota     || 1500;
   const carroPct  = Math.round(pagadas / total * 100);
   const saldo     = restantes * cuota;
+  const endDate   = typeof calcEndDate === 'function' ? calcEndDate(restantes) : `${restantes} meses`;
 
   return `
-    <div class="prog">
-      <div class="prog-row">
-        <span class="prog-name">Carro pagado</span>
-        <span class="prog-val">${carroPct}% · ${pagadas}/${total} cuotas</span>
+    <div class="carro-card">
+      <div class="cc-top">
+        <div>
+          <div class="cc-title">🚗 Deuda del carro</div>
+          <div class="cc-end">Termina aprox. <strong>${endDate}</strong></div>
+        </div>
+        <div class="cc-pct">${carroPct}%<br><span class="cc-pct-sub">pagado</span></div>
       </div>
-      <div class="prog-bar">
-        <div class="prog-fill" style="width:0%;background:linear-gradient(90deg,var(--vic),#7c3aed)" data-w="${carroPct}"></div>
+      <div class="cc-bar-bg">
+        <div class="cc-bar-fill" style="width:0%" data-w="${carroPct}"></div>
       </div>
-    </div>
-    <div class="prog">
-      <div class="prog-row">
-        <span class="prog-name">Saldo pendiente</span>
-        <span class="prog-val">${sol(saldo)}</span>
-      </div>
-      <div class="prog-bar">
-        <div class="prog-fill" style="width:0%;background:linear-gradient(90deg,var(--red),#f97316);opacity:.7" data-w="${100 - carroPct}"></div>
+      <div class="cc-stats">
+        <div class="cc-stat">
+          <div class="cc-stat-n">${pagadas}</div>
+          <div class="cc-stat-l">pagadas</div>
+        </div>
+        <div class="cc-stat cc-stat-mid">
+          <div class="cc-stat-n">${restantes}</div>
+          <div class="cc-stat-l">restantes</div>
+        </div>
+        <div class="cc-stat cc-stat-right">
+          <div class="cc-stat-n" style="color:var(--red)">${sol(saldo)}</div>
+          <div class="cc-stat-l">saldo</div>
+        </div>
       </div>
     </div>`;
 }

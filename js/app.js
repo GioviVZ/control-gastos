@@ -19,6 +19,59 @@ const ICONS = {
 
 let chartsReady = false;
 
+// Calcula la fecha aproximada de fin dado N cuotas restantes desde hoy
+function calcEndDate(restantes) {
+  const today = new Date();
+  const end = new Date(today.getFullYear(), today.getMonth() + restantes, 1);
+  return end.toLocaleDateString('es-PE', { month: 'long', year: 'numeric' });
+}
+
+function buildAlertasSection(deudas) {
+  const mesLabel = new Date().toLocaleDateString('es-PE', { month: 'long', year: 'numeric' });
+
+  const activas = deudas
+    .filter(d => d.restantes > 0 && d.nombre)
+    .sort((a, b) => a.restantes - b.restantes);
+
+  if (activas.length === 0) return '';
+
+  const cards = activas.map(d => {
+    const isLast    = d.restantes === 1;
+    const isWarning = d.restantes <= 3;
+    const cls       = isLast ? 'al-last' : isWarning ? 'al-warn' : 'al-normal';
+    const badge     = isLast
+      ? '<span class="al-badge al-badge-last">🎉 ¡Último pago este mes!</span>'
+      : isWarning
+      ? '<span class="al-badge al-badge-warn">⚡ Termina pronto</span>'
+      : '';
+
+    return `
+      <div class="al-card ${cls}">
+        ${badge}
+        <div class="al-header">
+          <span class="al-nombre">${ICONS[d.nombre] || '💳'} ${d.nombre}</span>
+          <span class="chip ${CHIP[d.resp] || 'ca'}">${d.resp}</span>
+        </div>
+        <div class="al-cuota">${sol(d.cuota)}<span class="al-freq">/mes</span></div>
+        <div class="al-footer">
+          <span class="al-end">Termina <strong>${calcEndDate(d.restantes)}</strong></span>
+          <span class="al-count">${d.restantes} cuota${d.restantes !== 1 ? 's' : ''}</span>
+        </div>
+      </div>`;
+  }).join('');
+
+  return `
+    <div class="alertas-wrap fade">
+      <div class="alertas-header-row">
+        <div>
+          <div class="alertas-title-text">📅 Pagos de ${mesLabel}</div>
+          <div class="alertas-sub-text">Compromisos activos — ordenados por urgencia</div>
+        </div>
+      </div>
+      <div class="al-grid">${cards}</div>
+    </div>`;
+}
+
 function renderDashboard(d) {
   const {
     porcentajes: pcts,
@@ -32,6 +85,9 @@ function renderDashboard(d) {
   } = d;
 
   $('header-date').textContent = 'Actualizado: ' + generadoEl;
+
+  // Alertas de pagos
+  $('alertas-section').innerHTML = buildAlertasSection(deudas);
 
   // Porcentajes
   $('vic-pct').textContent = pct(pcts.Victor);
@@ -49,12 +105,12 @@ function renderDashboard(d) {
   // Desglose por persona
   $('vic-rows').innerHTML = [
     buildRow('Servicios hogar',  sol(st.servicios.Victor)),
-    buildRow('Carro',            sol(st.carro.Victor)),
+    buildRow('Carro (deuda)',    sol(st.carro.Victor)),
     buildRow('Deudas',           sol(st.deudas.Victor)),
     buildRow('Telefonía',        sol(tel.Victor)),
     buildRow('Suscripciones',    sol(st.suscripc.Victor)),
     buildRow('Alim + salud',     sol(st.alimentac.Victor)),
-    buildRow('Ahorro carro',     sol(ahorroVictor)),
+    buildRow('Fondo mant. carro', sol(ahorroVictor)),
   ].join('');
 
   $('ede-rows').innerHTML = [
@@ -74,9 +130,9 @@ function renderDashboard(d) {
 
   // Pozo
   const pozoGrand = gt.total + ahorroVictor;
-  $('pozo-total').textContent = sol(pozoGrand);
-  $('pozo-sem').textContent   = sol(pozoGrand / 4);
-  $('alim-sem').textContent   = sol(alim.totalSem);
+  $('pozo-total').textContent  = sol(pozoGrand);
+  $('pozo-sem').textContent    = sol(pozoGrand / 4);
+  $('alim-sem').textContent    = sol(alim.totalSem);
   $('donut-total').textContent = sol(pozoGrand);
 
   // Tabla desglose
@@ -106,21 +162,32 @@ function renderDashboard(d) {
             <div class="di-name">${d.nombre}</div>
             <div class="di-meta">
               <span class="chip ${CHIP[d.resp] || 'ca'}">${d.resp}</span>
-              · ${d.restantes} restantes × ${sol(d.cuota)}
+              · ${d.restantes} cuota${d.restantes !== 1 ? 's' : ''} × ${sol(d.cuota)}
             </div>
           </div>
         </div>
         <div class="di-right">
-          <div class="di-term">${d.fechaInicio || d.restantes + ' cuotas'}</div>
+          <div class="di-term">Termina ${calcEndDate(d.restantes)}</div>
           <div class="di-amt">Libera ${sol(d.cuota)}/mes</div>
         </div>
       </div>`).join('');
 
-  // Victor ahorro
+  // Victor — panel mejorado
   $('victor-ahorro').innerHTML = `
-    <div class="ah-row"><span class="label">Pagos del hogar</span><span class="val">${sol(gt.Victor)}</span></div>
-    <div class="ah-row"><span class="label">Ahorro reserva carro</span><span class="val">${sol(ahorroVictor)}</span></div>
-    <div class="ah-total"><span class="label">Total que deposita</span><span class="val">${sol(vicT)}</span></div>`;
+    <div class="vc-block vc-hogar">
+      <div class="vc-block-title">🏠 Aporte al hogar</div>
+      <div class="vc-block-amount">${sol(gt.Victor)}</div>
+      <div class="vc-block-sub">Servicios, carro, deudas y alimentación</div>
+    </div>
+    <div class="vc-block vc-maint">
+      <div class="vc-block-title">🔧 Fondo mantenimiento del carro</div>
+      <div class="vc-block-amount">${sol(ahorroVictor)}</div>
+      <div class="vc-block-sub">Para reparaciones — no es una deuda, es ahorro</div>
+    </div>
+    <div class="vc-total">
+      <span class="vc-total-label">Total que deposita Victor</span>
+      <span class="vc-total-amt">${sol(vicT)}</span>
+    </div>`;
 
   $('vic-progreso').innerHTML = buildBarrasVictor(deudas);
 
