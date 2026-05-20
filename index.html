@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Control Familiar · Dashboard</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Fraunces:opsz,wght@9..144,300;9..144,600;9..144,800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/components.css">
+</head>
+<body>
+
+  <!-- ── LOADING ───────────────────────────────────── -->
+  <div id="loading">
+    <div class="loader-ring">
+      <div></div><div></div><div></div><div></div>
+    </div>
+    <p class="loading-txt">Cargando datos en vivo…</p>
+    <p class="loading-sub">Control Familiar</p>
+  </div>
+
+  <!-- ── ERROR ─────────────────────────────────────── -->
+  <div id="error-screen">
+    <div class="err-card">
+      <div class="err-icon">⚠</div>
+      <h2 class="err-title">Error de conexión</h2>
+      <p class="err-msg" id="err-msg">No se pudo conectar con Google Sheets.</p>
+      <button class="btn-primary" onclick="recargar()">↻ Reintentar</button>
+      <div class="err-divider">o cambia la URL del script</div>
+      <input class="url-input" id="url-input" type="url"
+        placeholder="https://script.google.com/macros/s/…/exec"
+        autocomplete="off" spellcheck="false">
+      <button class="btn-secondary" onclick="conectar()">Conectar con esta URL →</button>
+    </div>
+  </div>
+
+  <!-- ── DASHBOARD ─────────────────────────────────── -->
+  <div id="dash">
+    <div class="wrap">
+
+      <header class="fade">
+        <div>
+          <p class="logo-eyebrow">Control Familiar</p>
+          <h1 class="logo-title">Gastos & Aportes</h1>
+        </div>
+        <div class="header-meta">
+          <div class="header-date" id="header-date">—</div>
+          <div class="header-actions">
+            <span class="live-badge">● En vivo</span>
+            <button class="refresh-btn" onclick="recargar()">↻ Actualizar</button>
+          </div>
+        </div>
+      </header>
+
+      <!-- PERSONAS -->
+      <div class="sl">Aporte mensual por persona</div>
+      <div class="personas fade">
+
+        <div class="card-p vic">
+          <div class="p-top">
+            <div class="p-avatar">V</div>
+            <span class="p-pct" id="vic-pct">—</span>
+          </div>
+          <div class="p-name">Victor</div>
+          <div class="p-amount" id="vic-total">—</div>
+          <div class="p-sublabel">Este mes (incl. ahorro carro)</div>
+          <div class="p-rows" id="vic-rows"></div>
+          <div class="p-bar"><div class="p-fill" id="vic-bar" style="width:0%"></div></div>
+        </div>
+
+        <div class="card-p ede">
+          <div class="p-top">
+            <div class="p-avatar">E</div>
+            <span class="p-pct" id="ede-pct">—</span>
+          </div>
+          <div class="p-name">Edeliza</div>
+          <div class="p-amount" id="ede-total">—</div>
+          <div class="p-sublabel">Este mes</div>
+          <div class="p-rows" id="ede-rows"></div>
+          <div class="p-bar"><div class="p-fill" id="ede-bar" style="width:0%"></div></div>
+        </div>
+
+        <div class="card-p gio">
+          <div class="p-top">
+            <div class="p-avatar">G</div>
+            <span class="p-pct" id="gio-pct">—</span>
+          </div>
+          <div class="p-name">Giovanni</div>
+          <div class="p-amount" id="gio-total">—</div>
+          <div class="p-sublabel">Este mes</div>
+          <div class="p-rows" id="gio-rows"></div>
+          <div class="p-bar"><div class="p-fill" id="gio-bar" style="width:0%"></div></div>
+        </div>
+      </div>
+
+      <!-- CHARTS -->
+      <div class="charts-row fade">
+        <div class="panel chart-panel">
+          <div class="panel-title">
+            <span class="panel-dot"></span>Distribución de aportes
+          </div>
+          <div class="donut-wrap">
+            <canvas id="chart-donut"></canvas>
+            <div class="donut-center">
+              <div class="donut-label">Pozo total</div>
+              <div class="donut-val" id="donut-total">—</div>
+            </div>
+          </div>
+          <div class="donut-legend">
+            <span class="dl-item vic">● Victor</span>
+            <span class="dl-item ede">● Edeliza</span>
+            <span class="dl-item gio">● Giovanni</span>
+          </div>
+        </div>
+        <div class="panel chart-panel">
+          <div class="panel-title">
+            <span class="panel-dot" style="background:var(--gio)"></span>Desglose por categoría
+          </div>
+          <div class="bar-wrap">
+            <canvas id="chart-bar"></canvas>
+          </div>
+        </div>
+      </div>
+
+      <!-- TOTAL POZO -->
+      <div class="pozo-card fade">
+        <div>
+          <div class="pozo-label">Pozo familiar — total mensual</div>
+          <div class="pozo-amount" id="pozo-total">—</div>
+          <div class="pozo-sub">Servicios + deudas + alimentación</div>
+        </div>
+        <div class="pozo-right">
+          <div class="pozo-week-label">Promedio semanal</div>
+          <div class="pozo-week" id="pozo-sem">—</div>
+          <div style="margin-top:12px">
+            <div class="pozo-week-label">Solo alim + salud / sem</div>
+            <div class="pozo-week" id="alim-sem">—</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- DESGLOSE + DEUDAS -->
+      <div class="grid2 fade">
+        <div class="panel">
+          <div class="panel-title"><span class="panel-dot"></span>Desglose mensual</div>
+          <table class="bt" id="desglose-tabla"></table>
+        </div>
+        <div class="panel">
+          <div class="panel-title"><span class="panel-dot" style="background:var(--green)"></span>Cuándo terminan las deudas</div>
+          <div id="deudas-lista"></div>
+        </div>
+      </div>
+
+      <!-- VICTOR + SEMANAL -->
+      <div class="grid2 fade">
+        <div class="panel">
+          <div class="panel-title"><span class="panel-dot" style="background:var(--vic)"></span>Victor — Ahorro carro</div>
+          <div class="ahorro-box" id="victor-ahorro"></div>
+          <div style="margin-top:16px" id="vic-progreso"></div>
+        </div>
+        <div class="panel">
+          <div class="panel-title"><span class="panel-dot" style="background:var(--gio)"></span>Aporte semanal — comida y salud</div>
+          <div class="sem-grid" style="margin-bottom:16px">
+            <div class="sem-card vic"><div class="sem-name">Victor</div><div class="sem-amount" id="vic-sem">—</div><div class="sem-sub">por semana</div></div>
+            <div class="sem-card ede"><div class="sem-name">Edeliza</div><div class="sem-amount" id="ede-sem">—</div><div class="sem-sub">por semana</div></div>
+            <div class="sem-card gio"><div class="sem-name">Giovanni</div><div class="sem-amount" id="gio-sem">—</div><div class="sem-sub">por semana</div></div>
+          </div>
+          <div style="padding-top:14px;border-top:1px solid var(--border);display:flex;justify-content:space-between;align-items:center">
+            <span style="font-size:11px;color:var(--ink3)">Total semanal bolsa común</span>
+            <span style="font-family:var(--serif);font-size:20px;font-weight:800;color:var(--gold)" id="sem-total">—</span>
+          </div>
+          <div style="margin-top:14px" id="alim-detalle"></div>
+        </div>
+      </div>
+
+      <footer class="fade">
+        <span>Control Familiar · Dashboard</span>
+        <span class="footer-live">● Actualización automática cada 5 min</span>
+      </footer>
+
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+  <script src="js/api.js"></script>
+  <script src="js/charts.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>

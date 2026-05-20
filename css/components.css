@@ -1,0 +1,136 @@
+/* components.css — Dark theme components */
+
+/* ── PERSONA CARDS ────────────────────────────────── */
+.card-p {
+  border-radius: var(--r2); padding: 22px;
+  border: 1px solid var(--border); background: var(--bg2);
+  position: relative; overflow: hidden;
+  transition: transform .2s, box-shadow .2s, border-color .2s;
+}
+
+.card-p:hover { transform: translateY(-3px); }
+.card-p.vic:hover { box-shadow: 0 8px 32px var(--vic-glow); border-color: var(--vic-mid); }
+.card-p.ede:hover { box-shadow: 0 8px 32px var(--ede-glow); border-color: var(--ede-mid); }
+.card-p.gio:hover { box-shadow: 0 8px 32px var(--gio-glow); border-color: var(--gio-mid); }
+
+.card-p::before {
+  content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px;
+}
+.card-p.vic::before { background: linear-gradient(90deg, var(--vic), #7c3aed); }
+.card-p.ede::before { background: linear-gradient(90deg, var(--ede), #f97316); }
+.card-p.gio::before { background: linear-gradient(90deg, var(--gio), #06b6d4); }
+
+.card-p::after {
+  content: ''; position: absolute; top: -24px; right: -24px;
+  width: 90px; height: 90px; border-radius: 50%; opacity: .12; transition: opacity .3s;
+}
+.card-p:hover::after { opacity: .22; }
+.card-p.vic::after { background: var(--vic); }
+.card-p.ede::after { background: var(--ede); }
+.card-p.gio::after { background: var(--gio); }
+
+.p-top { display: flex; align-items: center; justify-content: space-between; margin-bottom: 14px; }
+
+.p-avatar {
+  width: 40px; height: 40px; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-family: var(--serif); font-size: 16px; font-weight: 800; position: relative; z-index: 1;
+}
+.vic .p-avatar { background: var(--vic-bg); color: var(--vic); border: 1.5px solid var(--vic-mid); }
+.ede .p-avatar { background: var(--ede-bg); color: var(--ede); border: 1.5px solid var(--ede-mid); }
+.gio .p-avatar { background: var(--gio-bg); color: var(--gio); border: 1.5px solid var(--gio-mid); }
+
+.p-pct { font-size: 11px; font-weight: 500; padding: 3px 10px; border-radius: 20px; letter-spacing: .04em; }
+.vic .p-pct { background: var(--vic-bg); color: var(--vic); border: 1px solid var(--vic-mid); }
+.ede .p-pct { background: var(--ede-bg); color: var(--ede); border: 1px solid var(--ede-mid); }
+.gio .p-pct { background: var(--gio-bg); color: var(--gio); border: 1px solid var(--gio-mid); }
+
+.p-name     { font-family: var(--serif); font-size: 18px; font-weight: 700; margin-bottom: 2px; }
+.p-sublabel { font-size: 10px; color: var(--ink3); margin: 4px 0 16px; }
+.p-amount   { font-family: var(--serif); font-size: 30px; font-weight: 800; line-height: 1; }
+.vic .p-amount { color: var(--vic); }
+.ede .p-amount { color: var(--ede); }
+.gio .p-amount { color: var(--gio); }
+
+.p-rows { display: flex; flex-direction: column; gap: 4px; margin-top: 14px; }
+.p-row  { display: flex; justify-content: space-between; align-items: center; padding: 5px 0; border-bottom: 1px solid var(--border); }
+.p-row:last-child { border-bottom: none; }
+.p-row .label { font-size: 11px; color: var(--ink3); }
+.p-row .val   { font-size: 11px; font-weight: 500; color: var(--ink2); }
+
+.p-bar  { height: 3px; border-radius: 2px; margin-top: 16px; background: var(--bg3); overflow: hidden; }
+.p-fill { height: 100%; border-radius: 2px; transition: width 1.2s ease; }
+.vic .p-fill { background: linear-gradient(90deg, var(--vic), #7c3aed); }
+.ede .p-fill { background: linear-gradient(90deg, var(--ede), #f97316); }
+.gio .p-fill { background: linear-gradient(90deg, var(--gio), #06b6d4); }
+
+/* ── WEEKLY CARDS ─────────────────────────────────── */
+.sem-card {
+  border-radius: var(--r); padding: 16px; text-align: center;
+  border: 1px solid var(--border); background: var(--bg3); transition: border-color .2s;
+}
+.sem-card.vic:hover { border-color: var(--vic-mid); }
+.sem-card.ede:hover { border-color: var(--ede-mid); }
+.sem-card.gio:hover { border-color: var(--gio-mid); }
+
+.sem-name   { font-size: 10px; color: var(--ink3); text-transform: uppercase; letter-spacing: .1em; margin-bottom: 6px; }
+.sem-sub    { font-size: 10px; color: var(--ink3); margin-top: 4px; }
+.sem-amount { font-family: var(--serif); font-size: 22px; font-weight: 800; }
+.vic .sem-amount { color: var(--vic); }
+.ede .sem-amount { color: var(--ede); }
+.gio .sem-amount { color: var(--gio); }
+
+/* ── CHIPS ────────────────────────────────────────── */
+.chip { display: inline-block; padding: 2px 8px; border-radius: 20px; font-size: 9px; font-weight: 500; letter-spacing: .06em; text-transform: uppercase; }
+.cv { background: var(--vic-bg); color: var(--vic); border: 1px solid var(--vic-mid); }
+.ce { background: var(--ede-bg); color: var(--ede); border: 1px solid var(--ede-mid); }
+.cg { background: var(--gio-bg); color: var(--gio); border: 1px solid var(--gio-mid); }
+.ca { background: var(--gold-bg); color: var(--gold); border: 1px solid var(--gold-mid); }
+
+/* ── TABLE ────────────────────────────────────────── */
+.bt { width: 100%; border-collapse: collapse; }
+.bt tr            { border-bottom: 1px solid var(--border); }
+.bt tr:last-child { border-bottom: none; }
+.bt td            { padding: 9px 0; font-size: 11px; vertical-align: middle; }
+.bt td:first-child { color: var(--ink2); }
+.bt td:last-child  { text-align: right; font-weight: 500; color: var(--ink); }
+.bt .tot td { font-weight: 700; border-top: 1.5px solid var(--border2); padding-top: 12px; }
+
+/* ── DEBT ITEMS ───────────────────────────────────── */
+.di { display: flex; align-items: center; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid var(--border); }
+.di:last-child { border-bottom: none; }
+.di-left  { display: flex; align-items: center; gap: 10px; }
+.di-icon  { font-size: 16px; }
+.di-name  { font-size: 12px; font-weight: 500; color: var(--ink); }
+.di-meta  { font-size: 10px; color: var(--ink3); margin-top: 1px; }
+.di-right { text-align: right; }
+.di-term  { font-size: 11px; font-weight: 500; color: var(--green); }
+.di-amt   { font-size: 10px; color: var(--ink3); margin-top: 1px; }
+
+/* ── PROGRESS BARS ────────────────────────────────── */
+.prog            { margin-bottom: 14px; }
+.prog:last-child { margin-bottom: 0; }
+.prog-row  { display: flex; justify-content: space-between; margin-bottom: 6px; }
+.prog-name { font-size: 11px; color: var(--ink2); }
+.prog-val  { font-size: 11px; color: var(--ink3); }
+.prog-bar  { height: 6px; background: var(--bg3); border-radius: 3px; overflow: hidden; }
+.prog-fill { height: 100%; border-radius: 3px; transition: width 1.2s ease; }
+
+/* ── VICTOR SAVINGS ───────────────────────────────── */
+.ahorro-box {
+  background: var(--vic-bg); border: 1px solid var(--vic-mid);
+  border-radius: var(--r); padding: 16px; margin-top: 14px;
+}
+.ah-row       { display: flex; justify-content: space-between; padding: 6px 0; border-bottom: 1px solid var(--border); }
+.ah-row:last-child { border-bottom: none; }
+.ah-row .label { font-size: 11px; color: var(--ink3); }
+.ah-row .val   { font-size: 11px; font-weight: 500; color: var(--vic); }
+.ah-total      { display: flex; justify-content: space-between; margin-top: 10px; padding-top: 10px; border-top: 1.5px solid var(--vic-mid); }
+.ah-total .label { font-size: 12px; font-weight: 600; color: var(--vic); }
+.ah-total .val   { font-family: var(--serif); font-size: 18px; font-weight: 700; color: var(--vic); }
+
+/* ── ERROR IN DASH ────────────────────────────────── */
+.err {
+  background: rgba(248,113,113,0.1); border: 1px solid rgba(248,113,113,0.3);
+  border-radius: var(--r); padding: 14px 18px; color: var(--red); font-size: 12px; margin-bottom: 20px;
+}
